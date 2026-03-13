@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>股票预测分析系统</title>
+    <title>全球股票预测分析系统</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             background: white;
             border-radius: 16px;
@@ -35,8 +35,9 @@
         }
 
         .header h1 {
-            font-size: 32px;
+            font-size: 36px;
             margin-bottom: 10px;
+            font-weight: 700;
         }
 
         .header p {
@@ -44,109 +45,246 @@
             opacity: 0.9;
         }
 
-        .content {
+        /* Tab 导航 */
+        .tabs {
             display: flex;
-            height: calc(100vh - 200px);
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+            padding: 0 20px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 20px 30px;
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-button:hover {
+            color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            background: white;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .tab-badge {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 2px 8px;
+            background: #667eea;
+            color: white;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .tab-button.active .tab-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        /* Tab 内容区 */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: flex;
+            height: calc(100vh - 240px);
         }
 
         .list-panel {
-            width: 50%;
+            width: 45%;
             border-right: 2px solid #e0e0e0;
             overflow-y: auto;
         }
 
         .detail-panel {
-            width: 50%;
+            width: 55%;
             overflow-y: auto;
             padding: 30px;
             background: #f8f9fa;
         }
 
+        /* 股票列表项 */
         .stock-item {
-            padding: 20px 30px;
+            padding: 24px 30px;
             border-bottom: 1px solid #e0e0e0;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .stock-item:hover {
             background: #f0f4ff;
+            transform: translateX(4px);
         }
 
         .stock-item.active {
             background: #e8f0ff;
-            border-left: 4px solid #667eea;
+            border-left: 5px solid #667eea;
+        }
+
+        .stock-rank {
+            position: absolute;
+            top: 24px;
+            left: 8px;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .stock-content {
+            margin-left: 30px;
         }
 
         .stock-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+        }
+
+        .stock-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .stock-code {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             color: #333;
         }
 
         .stock-name {
-            font-size: 14px;
+            font-size: 15px;
             color: #666;
-            margin-left: 10px;
         }
 
         .confidence-badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
             font-weight: bold;
+            white-space: nowrap;
         }
 
-        .stock-info {
+        .confidence-badge.high {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        .confidence-badge.medium {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .stock-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .metric-item {
             display: flex;
-            gap: 20px;
-            margin-bottom: 8px;
-            font-size: 13px;
-            color: #666;
+            flex-direction: column;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-size: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .metric-value.positive {
+            color: #e74c3c;
+        }
+
+        .metric-value.negative {
+            color: #27ae60;
         }
 
         .price-targets {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
         }
 
         .price-target {
-            flex: 1;
-            padding: 8px;
+            padding: 12px;
             background: white;
             border-radius: 8px;
             text-align: center;
+            border: 2px solid transparent;
+        }
+
+        .price-target.low {
+            border-color: #3498db;
+        }
+
+        .price-target.high {
+            border-color: #e74c3c;
         }
 
         .price-target-label {
             font-size: 11px;
             color: #999;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            font-weight: 600;
         }
 
         .price-target-value {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
+            color: #333;
         }
 
-        .price-target.positive {
-            color: #e74c3c;
+        .price-target-change {
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: 4px;
         }
 
-        .price-target.negative {
-            color: #27ae60;
-        }
-
+        /* 详情面板 */
         .detail-empty {
             display: flex;
             flex-direction: column;
@@ -169,42 +307,54 @@
 
         .detail-content.active {
             display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .detail-header {
             background: white;
-            padding: 25px;
+            padding: 30px;
             border-radius: 12px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
         }
 
         .detail-title {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
             color: #333;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
         }
 
         .detail-meta {
-            display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
         }
 
         .meta-item {
             display: flex;
             flex-direction: column;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
         }
 
         .meta-label {
             font-size: 12px;
             color: #999;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            font-weight: 600;
         }
 
         .meta-value {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             color: #333;
         }
@@ -218,12 +368,23 @@
         }
 
         .section-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             color: #667eea;
             margin-bottom: 15px;
             padding-bottom: 10px;
             border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
         }
 
         .section-content {
@@ -232,58 +393,55 @@
             color: #555;
         }
 
+        .section-content p {
+            margin-bottom: 12px;
+        }
+
         .section-content strong {
             color: #333;
+            font-weight: 600;
         }
 
-        .reasons-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .reasons-list li {
-            padding: 12px;
-            margin-bottom: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-        }
-
-        .reasons-list.bearish li {
-            border-left-color: #e74c3c;
+        .highlight-box {
+            background: #fff9e6;
+            border-left: 4px solid #f39c12;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
         }
 
         .conclusion {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 25px;
+            padding: 30px;
             border-radius: 12px;
             margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .conclusion-title {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
             margin-bottom: 15px;
         }
 
         .conclusion-text {
-            font-size: 14px;
-            line-height: 1.8;
+            font-size: 15px;
+            line-height: 1.9;
         }
 
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 60px 40px;
             color: #999;
         }
 
         .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
         }
@@ -294,7 +452,7 @@
         }
 
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
         }
 
         ::-webkit-scrollbar-track {
@@ -303,121 +461,239 @@
 
         ::-webkit-scrollbar-thumb {
             background: #888;
-            border-radius: 4px;
+            border-radius: 5px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .tab-content.active {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .list-panel, .detail-panel {
+                width: 100%;
+                border-right: none;
+                border-bottom: 2px solid #e0e0e0;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>股票预测分析系统</h1>
-            <p>长期看涨股票推荐 - 基于AI分析</p>
+            <h1>🚀 全球股票预测分析系统</h1>
+            <p>多市场看涨股票推荐 - 基于AI智能分析</p>
         </div>
-        <div class="content">
-            <div class="list-panel" id="stockList">
+
+        <!-- Tab 导航 -->
+        <div class="tabs">
+            <button class="tab-button active" data-market="US">
+                🇺🇸 美股市场 <span class="tab-badge" id="us-count">0</span>
+            </button>
+            <button class="tab-button" data-market="SH">
+                🇨🇳 A股市场 <span class="tab-badge" id="sh-count">0</span>
+            </button>
+            <button class="tab-button" data-market="HK">
+                🇭🇰 港股市场 <span class="tab-badge" id="hk-count">0</span>
+            </button>
+        </div>
+
+        <!-- 美股内容 -->
+        <div class="tab-content active" id="content-US">
+            <div class="list-panel" id="stockList-US">
                 <div class="loading">
                     <div class="spinner"></div>
-                    <p>正在加载数据...</p>
+                    <p>正在加载美股数据...</p>
                 </div>
             </div>
             <div class="detail-panel">
-                <div class="detail-empty" id="detailEmpty">
+                <div class="detail-empty" id="detailEmpty-US">
                     <svg fill="#999" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
                     <p>请从左侧列表选择一只股票查看详情</p>
                 </div>
-                <div class="detail-content" id="detailContent"></div>
+                <div class="detail-content" id="detailContent-US"></div>
+            </div>
+        </div>
+
+        <!-- A股内容 -->
+        <div class="tab-content" id="content-SH">
+            <div class="list-panel" id="stockList-SH">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>正在加载A股数据...</p>
+                </div>
+            </div>
+            <div class="detail-panel">
+                <div class="detail-empty" id="detailEmpty-SH">
+                    <svg fill="#999" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    <p>请从左侧列表选择一只股票查看详情</p>
+                </div>
+                <div class="detail-content" id="detailContent-SH"></div>
+            </div>
+        </div>
+
+        <!-- 港股内容 -->
+        <div class="tab-content" id="content-HK">
+            <div class="list-panel" id="stockList-HK">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>正在加载港股数据...</p>
+                </div>
+            </div>
+            <div class="detail-panel">
+                <div class="detail-empty" id="detailEmpty-HK">
+                    <svg fill="#999" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    <p>请从左侧列表选择一只股票查看详情</p>
+                </div>
+                <div class="detail-content" id="detailContent-HK"></div>
             </div>
         </div>
     </div>
 
     <script>
-        let stocksData = [];
-        let currentStock = null;
+        // 全局数据存储
+        const marketsData = {
+            US: { data: [], current: null },
+            SH: { data: [], current: null },
+            HK: { data: [], current: null }
+        };
+
+        let currentMarket = 'US';
+
+        // Tab 切换
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const market = button.dataset.market;
+                switchMarket(market);
+            });
+        });
+
+        function switchMarket(market) {
+            currentMarket = market;
+
+            // 更新 Tab 按钮状态
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.market === market);
+            });
+
+            // 更新内容显示
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.toggle('active', content.id === `content-${market}`);
+            });
+        }
 
         // 加载数据
         async function loadData() {
-            try {
-                const response = await fetch('stock_predictions_long_bullish_result.jsonl');
-                const text = await response.text();
-                const lines = text.trim().split('\n');
+            const markets = [
+                { code: 'US', file: 'stock_predictions_US_bullish.jsonl', currency: '$' },
+                { code: 'SH', file: 'stock_predictions_SH_bullish.jsonl', currency: '¥' },
+                { code: 'HK', file: 'stock_predictions_HK_bullish.jsonl', currency: 'HK$' }
+            ];
 
-                stocksData = lines
-                    .map(line => {
-                        try {
-                            return JSON.parse(line);
-                        } catch (e) {
-                            return null;
-                        }
-                    })
-                    .filter(stock => stock && stock.quantitative_prediction?.prediction_trend === 'bullish')
-                    .map(stock => {
-                        // 计算排序分: confidence_score * expected_high相对cur_price的涨幅
-                        const curPrice = stock.cur_price || 0;
-                        const expectedHigh = stock.quantitative_prediction?.price_target?.expected_high || curPrice;
-                        const confidence = stock.quantitative_prediction?.confidence_score || 0;
-                        const highChangePercent = curPrice > 0 ? ((expectedHigh - curPrice) / curPrice * 100) : 0;
-                        stock.sort_score = confidence * highChangePercent;
-                        return stock;
-                    })
-                    .sort((a, b) => {
-                        return (b.sort_score || 0) - (a.sort_score || 0);
-                    });
+            for (const market of markets) {
+                try {
+                    const response = await fetch(market.file);
+                    const text = await response.text();
+                    const lines = text.trim().split('\n');
 
-                renderStockList();
-            } catch (error) {
-                document.getElementById('stockList').innerHTML = `
-                    <div class="loading">
-                        <p style="color: #e74c3c;">加载失败: ${error.message}</p>
-                    </div>
-                `;
+                    marketsData[market.code].data = lines
+                        .map(line => {
+                            try {
+                                return JSON.parse(line);
+                            } catch (e) {
+                                return null;
+                            }
+                        })
+                        .filter(stock => stock && stock.quantitative_prediction?.prediction_trend === 'buy')
+                        .sort((a, b) => {
+                            const rankA = a.quantitative_prediction?.ranking_score || 0;
+                            const rankB = b.quantitative_prediction?.ranking_score || 0;
+                            return rankB - rankA;
+                        });
+
+                    marketsData[market.code].currency = market.currency;
+                    renderStockList(market.code);
+
+                    // 更新计数
+                    document.getElementById(`${market.code.toLowerCase()}-count`).textContent =
+                        marketsData[market.code].data.length;
+
+                } catch (error) {
+                    document.getElementById(`stockList-${market.code}`).innerHTML = `
+                        <div class="loading">
+                            <p style="color: #e74c3c;">加载失败: ${error.message}</p>
+                        </div>
+                    `;
+                }
             }
         }
 
         // 渲染股票列表
-        function renderStockList() {
-            const listPanel = document.getElementById('stockList');
+        function renderStockList(market) {
+            const listPanel = document.getElementById(`stockList-${market}`);
+            const stocks = marketsData[market].data;
+            const currency = marketsData[market].currency;
 
-            if (stocksData.length === 0) {
+            if (stocks.length === 0) {
                 listPanel.innerHTML = '<div class="loading"><p>没有找到符合条件的股票</p></div>';
                 return;
             }
 
-            listPanel.innerHTML = stocksData.map((stock, index) => {
+            listPanel.innerHTML = stocks.map((stock, index) => {
                 const curPrice = stock.cur_price || 0;
                 const expectedLow = stock.quantitative_prediction?.price_target?.expected_low || curPrice;
                 const expectedHigh = stock.quantitative_prediction?.price_target?.expected_high || curPrice;
+                const confidence = stock.quantitative_prediction?.confidence_score || 0;
+                const rankingScore = stock.quantitative_prediction?.ranking_score || 0;
 
                 const lowChange = ((expectedLow - curPrice) / curPrice * 100).toFixed(2);
                 const highChange = ((expectedHigh - curPrice) / curPrice * 100).toFixed(2);
-                const confidence = stock.quantitative_prediction?.confidence_score || 0;
-                const sortScore = stock.sort_score || 0;
+
+                let confidenceClass = 'medium';
+                if (confidence >= 70) confidenceClass = 'high';
+                else if (confidence < 50) confidenceClass = '';
 
                 return `
-                    <div class="stock-item" onclick="showDetail(${index})">
-                        <div class="stock-header">
-                            <div>
-                                <span class="stock-code">${stock.stock_code}</span>
-                                <span class="stock-name">${stock.stock_name}</span>
+                    <div class="stock-item" onclick="showDetail('${market}', ${index})">
+                        <div class="stock-rank">${index + 1}</div>
+                        <div class="stock-content">
+                            <div class="stock-header">
+                                <div class="stock-title">
+                                    <span class="stock-code">${stock.stock_code}</span>
+                                    <span class="stock-name">${stock.stock_name}</span>
+                                </div>
+                                <span class="confidence-badge ${confidenceClass}">评分: ${rankingScore}</span>
                             </div>
-                            <span class="confidence-badge">排序分: ${sortScore.toFixed(2)}</span>
-                        </div>
-                        <div class="stock-info">
-                            <span>行业: ${stock.company_overview?.sector_and_industry || 'N/A'}</span>
-                            <span>当前价: $${curPrice.toFixed(2)}</span>
-                            <span>信心度: ${confidence}%</span>
-                        </div>
-                        <div class="price-targets">
-                            <div class="price-target ${parseFloat(lowChange) >= 0 ? 'positive' : 'negative'}">
-                                <div class="price-target-label">目标低位</div>
-                                <div class="price-target-value">$${expectedLow.toFixed(2)} (${lowChange}%)</div>
+                            <div class="stock-metrics">
+                                <div class="metric-item">
+                                    <div class="metric-label">当前价</div>
+                                    <div class="metric-value">${currency}${curPrice.toFixed(2)}</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-label">信心度</div>
+                                    <div class="metric-value">${confidence}%</div>
+                                </div>
+                                <div class="metric-item">
+                                    <div class="metric-label">时间框架</div>
+                                    <div class="metric-value">${stock.timeframe || 'N/A'}</div>
+                                </div>
                             </div>
-                            <div class="price-target ${parseFloat(highChange) >= 0 ? 'positive' : 'negative'}">
-                                <div class="price-target-label">目标高位</div>
-                                <div class="price-target-value">$${expectedHigh.toFixed(2)} (${highChange}%)</div>
+                            <div class="price-targets">
+                                <div class="price-target low">
+                                    <div class="price-target-label">🎯 目标低位</div>
+                                    <div class="price-target-value">${currency}${expectedLow.toFixed(2)}</div>
+                                    <div class="price-target-change ${parseFloat(lowChange) >= 0 ? 'positive' : 'negative'}">${lowChange}%</div>
+                                </div>
+                                <div class="price-target high">
+                                    <div class="price-target-label">🚀 目标高位</div>
+                                    <div class="price-target-value">${currency}${expectedHigh.toFixed(2)}</div>
+                                    <div class="price-target-change ${parseFloat(highChange) >= 0 ? 'positive' : 'negative'}">${highChange}%</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -426,127 +702,113 @@
         }
 
         // 显示详情
-        function showDetail(index) {
-            currentStock = stocksData[index];
+        function showDetail(market, index) {
+            const stock = marketsData[market].data[index];
+            marketsData[market].current = stock;
+            const currency = marketsData[market].currency;
 
             // 更新激活状态
-            document.querySelectorAll('.stock-item').forEach((item, i) => {
+            document.querySelectorAll(`#stockList-${market} .stock-item`).forEach((item, i) => {
                 item.classList.toggle('active', i === index);
             });
 
             // 隐藏空状态，显示详情
-            document.getElementById('detailEmpty').style.display = 'none';
-            const detailContent = document.getElementById('detailContent');
+            document.getElementById(`detailEmpty-${market}`).style.display = 'none';
+            const detailContent = document.getElementById(`detailContent-${market}`);
             detailContent.classList.add('active');
 
             // 渲染详情
-            const stock = currentStock;
             const curPrice = stock.cur_price || 0;
             const expectedLow = stock.quantitative_prediction?.price_target?.expected_low || curPrice;
             const expectedHigh = stock.quantitative_prediction?.price_target?.expected_high || curPrice;
             const lowChange = ((expectedLow - curPrice) / curPrice * 100).toFixed(2);
             const highChange = ((expectedHigh - curPrice) / curPrice * 100).toFixed(2);
+            const confidence = stock.quantitative_prediction?.confidence_score || 0;
+            const rankingScore = stock.quantitative_prediction?.ranking_score || 0;
 
             detailContent.innerHTML = `
                 <div class="detail-header">
                     <div class="detail-title">${stock.stock_code} - ${stock.stock_name}</div>
                     <div class="detail-meta">
                         <div class="meta-item">
-                            <div class="meta-label">当前价格</div>
-                            <div class="meta-value">$${curPrice.toFixed(2)}</div>
+                            <div class="meta-label">💰 当前价格</div>
+                            <div class="meta-value">${currency}${curPrice.toFixed(2)}</div>
                         </div>
                         <div class="meta-item">
-                            <div class="meta-label">目标低位</div>
+                            <div class="meta-label">🎯 目标低位</div>
                             <div class="meta-value" style="color: ${parseFloat(lowChange) >= 0 ? '#e74c3c' : '#27ae60'}">
-                                $${expectedLow.toFixed(2)} (${lowChange}%)
+                                ${currency}${expectedLow.toFixed(2)} (${lowChange}%)
                             </div>
                         </div>
                         <div class="meta-item">
-                            <div class="meta-label">目标高位</div>
+                            <div class="meta-label">🚀 目标高位</div>
                             <div class="meta-value" style="color: ${parseFloat(highChange) >= 0 ? '#e74c3c' : '#27ae60'}">
-                                $${expectedHigh.toFixed(2)} (${highChange}%)
+                                ${currency}${expectedHigh.toFixed(2)} (${highChange}%)
                             </div>
                         </div>
                         <div class="meta-item">
-                            <div class="meta-label">信心度</div>
-                            <div class="meta-value">${stock.quantitative_prediction?.confidence_score || 0}%</div>
+                            <div class="meta-label">📊 信心度</div>
+                            <div class="meta-value">${confidence}%</div>
                         </div>
                         <div class="meta-item">
-                            <div class="meta-label">时间框架</div>
+                            <div class="meta-label">⭐ 评分</div>
+                            <div class="meta-value">${rankingScore}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">⏰ 时间框架</div>
                             <div class="meta-value">${stock.timeframe || 'N/A'}</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">公司概览</div>
+                    <div class="section-title">🏢 公司概览</div>
                     <div class="section-content">
-                        <p><strong>商业模式:</strong> ${stock.company_overview?.business_model || 'N/A'}</p>
-                        <br>
-                        <p><strong>市场地位:</strong> ${stock.company_overview?.market_position || 'N/A'}</p>
-                        <br>
-                        <p><strong>行业板块:</strong> ${stock.company_overview?.sector_and_industry || 'N/A'}</p>
+                        <p><strong>商业模式:</strong> ${stock.company_profile?.business_model || 'N/A'}</p>
+                        ${stock.company_profile?.competitive_edge ? `
+                            <div class="highlight-box">
+                                <strong>💎 核心竞争力:</strong><br>
+                                ${stock.company_profile.competitive_edge}
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
 
+                ${stock.recent_surge_analysis ? `
                 <div class="section">
-                    <div class="section-title">宏观环境</div>
+                    <div class="section-title">📈 近期涨势分析</div>
                     <div class="section-content">
-                        <p><strong>经济影响:</strong> ${stock.macro_environment?.economic_impact || 'N/A'}</p>
-                        <br>
-                        <p><strong>地缘政治与监管:</strong> ${stock.macro_environment?.geopolitical_or_regulatory || 'N/A'}</p>
+                        <p><strong>涨势原因:</strong> ${stock.recent_surge_analysis.surge_reasons || 'N/A'}</p>
+                        <p><strong>催化剂性质:</strong> ${stock.recent_surge_analysis.nature_of_catalyst || 'N/A'}</p>
                     </div>
                 </div>
+                ` : ''}
 
+                ${stock.future_prospects ? `
                 <div class="section">
-                    <div class="section-title">最新动态</div>
+                    <div class="section-title">🔮 未来展望</div>
                     <div class="section-content">
-                        <p><strong>最新消息:</strong> ${stock.recent_dynamics?.latest_news || 'N/A'}</p>
-                        <br>
-                        <p><strong>财报表现:</strong> ${stock.recent_dynamics?.earnings_performance || 'N/A'}</p>
+                        <p><strong>行业前景:</strong> ${stock.future_prospects.industry_outlook || 'N/A'}</p>
+                        <p><strong>增长驱动:</strong> ${stock.future_prospects.growth_drivers || 'N/A'}</p>
                     </div>
                 </div>
+                ` : ''}
 
+                ${stock.continuation_analysis ? `
                 <div class="section">
-                    <div class="section-title">基本面分析</div>
+                    <div class="section-title">📊 延续性分析</div>
                     <div class="section-content">
-                        <p><strong>估值状态:</strong> ${stock.fundamental_analysis?.valuation_status || 'N/A'}</p>
-                        <br>
-                        <p><strong>成长性与盈利能力:</strong> ${stock.fundamental_analysis?.growth_and_profitability || 'N/A'}</p>
+                        <p><strong>上涨潜力:</strong> ${stock.continuation_analysis.upside_potential || 'N/A'}</p>
+                        <div class="highlight-box">
+                            <strong>⚠️ 风险因素:</strong><br>
+                            ${stock.continuation_analysis.risk_factors || 'N/A'}
+                        </div>
                     </div>
                 </div>
-
-                <div class="section">
-                    <div class="section-title">技术分析</div>
-                    <div class="section-content">
-                        <p><strong>当前趋势:</strong> ${stock.technical_analysis?.current_trend || 'N/A'}</p>
-                        <br>
-                        <p><strong>关键指标:</strong> ${stock.technical_analysis?.key_indicators || 'N/A'}</p>
-                        <br>
-                        <p><strong>支撑与阻力:</strong> ${stock.technical_analysis?.support_and_resistance || 'N/A'}</p>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-title">看涨理由</div>
-                    <ul class="reasons-list">
-                        ${(stock.long_term_thesis?.bullish_reasons || []).map(reason => `
-                            <li>${reason}</li>
-                        `).join('')}
-                    </ul>
-                </div>
-
-                <div class="section">
-                    <div class="section-title">风险因素</div>
-                    <ul class="reasons-list bearish">
-                        ${(stock.long_term_thesis?.bearish_and_risk_factors || []).map(risk => `
-                            <li>${risk}</li>
-                        `).join('')}
-                    </ul>
-                </div>
+                ` : ''}
 
                 <div class="conclusion">
-                    <div class="conclusion-title">综合结论</div>
+                    <div class="conclusion-title">💡 综合结论</div>
                     <div class="conclusion-text">${stock.final_conclusion || 'N/A'}</div>
                 </div>
             `;

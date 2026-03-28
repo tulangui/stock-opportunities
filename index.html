@@ -187,7 +187,25 @@
             color: #666;
         }
 
-        .confidence-badge {
+        .trend-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .trend-badge.strong_buy {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+        }
+
+        .trend-badge.buy {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+        }
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
             padding: 6px 14px;
@@ -884,7 +902,7 @@
                             const expectedHigh = stock.quantitative_prediction?.price_target?.expected_high || 0;
                             const confidence = stock.quantitative_prediction?.confidence_score || 0;
                             const highChange = curPrice > 0 ? (expectedHigh - curPrice) / curPrice * 100 : 0;
-                            return highChange > 30 && confidence > 80;
+                            return highChange > 30 && confidence > 75;
                         })
                         .sort((a, b) => {
                             const rankA = a.quantitative_prediction?.ranking_score || 0;
@@ -926,6 +944,8 @@
                 const expectedHigh = stock.quantitative_prediction?.price_target?.expected_high || curPrice;
                 const confidence = stock.quantitative_prediction?.confidence_score || 0;
                 const rankingScore = stock.quantitative_prediction?.ranking_score || 0;
+                const trend = stock.quantitative_prediction?.prediction_trend || 'buy';
+                const trendLabel = trend === 'strong_buy' ? '⚡ 强烈买入' : '✅ 买入';
 
                 const lowChange = ((expectedLow - curPrice) / curPrice * 100).toFixed(2);
                 const highChange = ((expectedHigh - curPrice) / curPrice * 100).toFixed(2);
@@ -942,6 +962,7 @@
                                 <div class="stock-title">
                                     <span class="stock-code">${stock.stock_code}</span>
                                     <span class="stock-name">${stock.stock_name}</span>
+                                    <span class="trend-badge ${trend}">${trendLabel}</span>
                                 </div>
                                 <span class="confidence-badge ${confidenceClass}">评分: ${rankingScore}</span>
                             </div>
@@ -995,10 +1016,15 @@
             const highChange = ((expectedHigh - curPrice) / curPrice * 100).toFixed(2);
             const confidence = stock.quantitative_prediction?.confidence_score || 0;
             const rankingScore = stock.quantitative_prediction?.ranking_score || 0;
+            const trend = stock.quantitative_prediction?.prediction_trend || 'buy';
+            const trendLabel = trend === 'strong_buy' ? '⚡ 强烈买入' : '✅ 买入';
 
             const detailHTML = `
                 <div class="detail-header">
-                    <div class="detail-title">${stock.stock_code} - ${stock.stock_name}</div>
+                    <div class="detail-title">
+                        ${stock.stock_code} - ${stock.stock_name}
+                        <span class="trend-badge ${trend}" style="font-size:14px;vertical-align:middle;margin-left:10px">${trendLabel}</span>
+                    </div>
                     <div class="detail-meta">
                         <div class="meta-item">
                             <div class="meta-label">💰 当前价格</div>

@@ -876,7 +876,16 @@
                                 return null;
                             }
                         })
-                        .filter(stock => stock && stock.quantitative_prediction?.prediction_trend === 'buy')
+                        .filter(stock => {
+                            if (!stock) return false;
+                            const trend = stock.quantitative_prediction?.prediction_trend;
+                            if (trend !== 'buy' && trend !== 'strong_buy') return false;
+                            const curPrice = stock.cur_price || 0;
+                            const expectedHigh = stock.quantitative_prediction?.price_target?.expected_high || 0;
+                            const confidence = stock.quantitative_prediction?.confidence_score || 0;
+                            const highChange = curPrice > 0 ? (expectedHigh - curPrice) / curPrice * 100 : 0;
+                            return highChange > 30 && confidence > 80;
+                        })
                         .sort((a, b) => {
                             const rankA = a.quantitative_prediction?.ranking_score || 0;
                             const rankB = b.quantitative_prediction?.ranking_score || 0;

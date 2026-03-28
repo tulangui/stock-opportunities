@@ -902,8 +902,9 @@
                             const curPrice = stock.cur_price || 0;
                             const expectedHigh = stock.quantitative_prediction?.price_target?.expected_high || 0;
                             const confidence = stock.quantitative_prediction?.confidence_score || 0;
+                            const rankingScore = stock.quantitative_prediction?.ranking_score || 0;
                             const highChange = curPrice > 0 ? (expectedHigh - curPrice) / curPrice * 100 : 0;
-                            return highChange > 30 && confidence >= 75;
+                            return highChange > 15 && confidence >= 70 && rankingScore >= 80;
                         })
                         .sort((a, b) => {
                             const rankA = a.quantitative_prediction?.ranking_score || 0;
